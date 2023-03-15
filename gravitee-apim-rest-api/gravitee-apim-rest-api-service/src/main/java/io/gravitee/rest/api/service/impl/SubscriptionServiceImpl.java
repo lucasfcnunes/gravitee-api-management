@@ -37,6 +37,7 @@ import static java.util.stream.Collectors.toSet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.gravitee.common.data.domain.Page;
+import io.gravitee.common.event.EventManager;
 import io.gravitee.definition.model.DefinitionVersion;
 import io.gravitee.definition.model.v4.listener.ListenerType;
 import io.gravitee.definition.model.v4.plan.PlanSecurity;
@@ -91,6 +92,7 @@ import io.gravitee.rest.api.service.UserService;
 import io.gravitee.rest.api.service.common.ExecutionContext;
 import io.gravitee.rest.api.service.common.UuidString;
 import io.gravitee.rest.api.service.converter.ApplicationConverter;
+import io.gravitee.rest.api.service.event.SubscriptionEvent;
 import io.gravitee.rest.api.service.exceptions.ApplicationArchivedException;
 import io.gravitee.rest.api.service.exceptions.PlanAlreadyClosedException;
 import io.gravitee.rest.api.service.exceptions.PlanAlreadySubscribedException;
@@ -206,6 +208,9 @@ public class SubscriptionServiceImpl extends AbstractService implements Subscrip
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private EventManager eventManager;
 
     @Override
     public SubscriptionEntity findById(String subscriptionId) {
@@ -869,6 +874,8 @@ public class SubscriptionServiceImpl extends AbstractService implements Subscrip
                         }
                     });
             }
+
+            eventManager.publishEvent(SubscriptionEvent.PROCESSED, subscriptionEntity);
 
             return subscriptionEntity;
         } catch (TechnicalException ex) {
