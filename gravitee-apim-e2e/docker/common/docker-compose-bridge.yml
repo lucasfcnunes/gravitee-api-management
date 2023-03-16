@@ -31,9 +31,11 @@ services:
         condition: service_healthy
     ports:
       - "8083:8083"
+    user: "${UID}:1000"
     volumes:
       - ./.logs/apim-management-api:/opt/graviteeio-management-api/logs
       - ./jacoco:/opt/jacoco
+    command: chown -R ${UID}:1000 ./.logs ./jacoco
     environment:
       - gravitee_analytics_elasticsearch_endpoints_0=http://elasticsearch:9200
       - gravitee_newsletter_enabled=false
@@ -64,9 +66,11 @@ services:
         condition: service_healthy
     ports:
       - "18082:18082"
+    user: "${UID}:1000"
     volumes:
       - ./.logs/apim-gateway-server:/opt/graviteeio-gateway/logs
       - ./jacoco:/opt/jacoco
+    command: chown -R ${UID}:1000 ./.logs ./jacoco
     environment:
       - gravitee_reporters_elasticsearch_endpoints_0=http://elasticsearch:9200
       - gravitee_api_jupiterMode_enabled=${JUPITER_MODE_ENABLED:-false}
@@ -100,9 +104,11 @@ services:
     depends_on:
       - elasticsearch
       - gateway
+    user: "${UID}:1000"
     volumes:
       - ./.logs/apim-gateway-client:/opt/graviteeio-gateway/logs
       - ./.license:/opt/graviteeio-gateway/license
+    command: chown -R ${UID}:1000 ./.logs ./.license
     environment:
       - gravitee_management_type=http
       - gravitee_management_http_url=http://gateway-server:18092
