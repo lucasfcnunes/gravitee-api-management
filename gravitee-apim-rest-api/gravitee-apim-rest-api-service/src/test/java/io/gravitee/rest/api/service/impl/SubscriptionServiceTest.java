@@ -50,6 +50,7 @@ import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.gravitee.common.data.domain.Page;
+import io.gravitee.common.event.EventManager;
 import io.gravitee.definition.model.DefinitionVersion;
 import io.gravitee.definition.model.v4.listener.subscription.SubscriptionListener;
 import io.gravitee.repository.exceptions.TechnicalException;
@@ -236,6 +237,9 @@ public class SubscriptionServiceTest {
     private PlanEntity planEntity;
 
     private io.gravitee.rest.api.model.v4.plan.PlanEntity planEntityV4;
+
+    @Mock
+    private EventManager eventManager;
 
     @AfterClass
     public static void cleanSecurityContextHolder() {
