@@ -1,0 +1,19 @@
+extends: spectral:oas
+rules:
+
+  query-parameters-camelcase:
+    given: $..parameters[?(@.in == 'query')].name
+    then:
+      function: casing
+      functionOptions:
+        type: camel
+        disallowDigits: true
+    message: Query parameters should be camelCase and not contain digits
+    severity: error
+
+  array-in-query-parameter-are-not-exploded:
+    given: $..parameters[?(@.in == 'query' && @.schema.type == 'array')].explode
+    then:
+      function: falsy
+    message: Query parameters of type array should not be exploded
+    severity: error

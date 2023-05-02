@@ -463,7 +463,7 @@ paths:
                       type: array
                       items:
                           $ref: "#/components/schemas/PlanStatus"
-                      default: ["published"]
+                      default: ["PUBLISHED"]
                   explode: false
                 - name: security
                   in: query
@@ -754,7 +754,7 @@ paths:
     /plugins/endpoints:
         get:
             tags:
-                - Plugins Endpoints
+                - Plugins - Endpoints
             summary: Get available endpoints on the platform
             description: |
                 Get available endpoint types on the platform.
@@ -1060,17 +1060,17 @@ components:
                     type: string
                     format: date-time
                     description: The last date (as timestamp) when the API was deployed.
-                    example: 1581256457163
+                    example: 2023-05-25T12:40:46.184Z
                 createdAt:
                     type: string
                     format: date-time
                     description: The date (as timestamp) when the API was created.
-                    example: 1581256457163
+                    example: 2023-05-25T12:40:46.184Z
                 updatedAt:
                     type: string
                     format: date-time
                     description: The last date (as timestamp) when the API was updated.
-                    example: 1581256457163
+                    example: 2023-05-25T12:40:46.184Z
                 disableMembershipNotifications:
                     type: boolean
                     description: Disable membership notifications.
@@ -3567,9 +3567,7 @@ components:
                 referenceType:
                     type: string
                     description: The type of the resource used to check the access control
-                    example:
-                        - GROUP
-                        - ROLE
+                    example: GROUP
         Media:
             type: object
             properties:
@@ -3602,7 +3600,7 @@ components:
                     type: string
                     format: byte
                     description: Media's data.
-                    example: binary encoded data
+                    example: QW4gZXhhbXBsZQ==
                 createdAt:
                     type: string
                     format: date-time
@@ -3728,7 +3726,8 @@ components:
                 type:
                     type: string
                     description: The type of the page source (=fetcher type).
-                    example:
+                    example: http-fetcher
+                    enum:
                         - http-fetcher
                         - git-fetcher
                         - gitlab-fetcher
