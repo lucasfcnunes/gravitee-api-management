@@ -28,6 +28,7 @@
         "prettier:fix": "prettier --write \"**/*.{js,ts,html,css,scss,json}\"",
         "prettier:list": "prettier --list-different \"**/*.{js,ts,html,css,scss,json}\"",
         "update:sdk:management": "./scripts/update-management-sdk.mjs",
+        "update:sdk:management-v2": "./scripts/update-management-v2-sdk.mjs",
         "update:sdk:portal": "sh ./scripts/update-portal-sdk.sh"
     },
     "license": "MIT License",
@@ -53,6 +54,7 @@
         "@faker-js/faker": "6.2.0",
         "@gravitee/fixtures": "file:lib/fixtures",
         "@gravitee/management-webclient-sdk": "file:lib/management-webclient-sdk",
+        "@gravitee/management-v2-webclient-sdk": "file:lib/management-v2-webclient-sdk",
         "@gravitee/portal-webclient-sdk": "file:lib/portal-webclient-sdk",
         "@gravitee/utils": "file:lib/utils",
         "jsonwebtoken": "9.0.0",

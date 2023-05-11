@@ -28,6 +28,8 @@ servers:
       variables:
           version:
               default: 4-0-x
+security:
+    - gravitee-auth: []
 paths:
     /organizations/{orgId}:
         parameters:
@@ -3404,3 +3406,8 @@ components:
                 application/json:
                     schema:
                         $ref: "#/components/schemas/Error"
+
+    securitySchemes:
+        gravitee-auth:
+            type: http
+            scheme: basic

@@ -65,8 +65,9 @@ Then, the following NPM scripts are available:
 ## About management API client 
 
 This project use project https://github.com/OpenAPITools/openapi-generator[openapi-generator] to generate a client sdk with openapi file.
-If you want to generate the client for management API, start the management rest-api locally and run `npm run update:sdk:management`
-If you want to generate the client for portal API, just run `npm run update:sdk:portal`
+To generate the client for management API, start the management rest-api locally and run `npm run update:sdk:management`
+To generate the client for management API V2, run `npm run update:sdk:management-v2`
+To generate the client for portal API, just run `npm run update:sdk:portal`
 
 ## Environment variables
 
