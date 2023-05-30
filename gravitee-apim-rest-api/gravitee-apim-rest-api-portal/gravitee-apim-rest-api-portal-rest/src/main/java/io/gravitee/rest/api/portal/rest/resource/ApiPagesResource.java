@@ -29,6 +29,7 @@ import io.gravitee.rest.api.service.PageService;
 import io.gravitee.rest.api.service.common.ExecutionContext;
 import io.gravitee.rest.api.service.common.GraviteeContext;
 import io.gravitee.rest.api.service.exceptions.ApiNotFoundException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -40,11 +41,13 @@ import javax.ws.rs.*;
 import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Florent CHAMFROY (florent.chamfroy at graviteesource.com)
  * @author GraviteeSource Team
  */
+@Slf4j
 public class ApiPagesResource extends AbstractResource {
 
     @Inject
@@ -72,7 +75,9 @@ public class ApiPagesResource extends AbstractResource {
         final ApiQuery apiQuery = new ApiQuery();
         apiQuery.setIds(Collections.singletonList(apiId));
         final ExecutionContext executionContext = GraviteeContext.getExecutionContext();
+        log.info("Compute access at {}", Instant.now());
         if (accessControlService.canAccessApiFromPortal(executionContext, apiId)) {
+            log.info("Access granted at {}", Instant.now());
             final String acceptedLocale = HttpHeadersUtil.getFirstAcceptedLocaleName(acceptLang);
 
             Stream<Page> pageStream = pageService
