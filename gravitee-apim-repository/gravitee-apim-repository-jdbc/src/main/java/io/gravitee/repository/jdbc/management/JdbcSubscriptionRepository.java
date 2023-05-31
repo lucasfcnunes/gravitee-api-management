@@ -141,6 +141,11 @@ public class JdbcSubscriptionRepository extends JdbcAbstractCrudRepository<Subsc
         );
     }
 
+    @Override
+    public Set<String> findApiIds(SubscriptionCriteria criteria) {
+        return null;
+    }
+
     private PreparedStatementSetter fillPreparedStatement(Collection<String> data, SubscriptionCriteria criteria) {
         return ps -> {
             int index = 1;

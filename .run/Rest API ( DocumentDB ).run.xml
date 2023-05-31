@@ -1,0 +1,28 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Rest API ( DocumentDB )" type="Application" factoryName="Application" folderName="AWS">
+    <option name="ALTERNATIVE_JRE_PATH" value="17" />
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+    <envs>
+      <env name="management_mongodb_password" value="55dn1bTYQAMeexi5ytu2sg5qxNOt1jjJ" />
+      <env name="management_mongodb_retryWrites" value="false" />
+      <env name="management_mongodb_sslEnabled" value="true" />
+      <env name="management_mongodb_sslInvalidHostNameAllowed" value="true" />
+      <env name="management_mongodb_truststore_password" value="0QKIQv4FCNBoUc6WQAVL" />
+      <env name="management_mongodb_truststore_path" value="$PROJECT_DIR$/../certificates/aws/rds-truststore.jks" />
+      <env name="management_mongodb_truststore_type" value="jks" />
+      <env name="management_mongodb_username" value="THOnelEnEWEa" />
+      <env name="management_mongodb_dbname" value="gravitee_apim_3_18_x_perf" />
+    </envs>
+    <option name="MAIN_CLASS_NAME" value="io.gravitee.rest.api.standalone.GraviteeApisContainer" />
+    <module name="gravitee-apim-rest-api-standalone-container" />
+    <option name="VM_PARAMETERS" value="-Dgravitee.home=$PROJECT_DIR$/gravitee-apim-rest-api/gravitee-apim-rest-api-standalone/gravitee-apim-rest-api-standalone-distribution/target/distribution -Djdk.security.allowNonCaAnchor=true" />
+    <extension name="software.aws.toolkits.jetbrains.core.execution.JavaAwsConnectionExtension">
+      <option name="credential" />
+      <option name="region" />
+      <option name="useCurrentConnection" value="false" />
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

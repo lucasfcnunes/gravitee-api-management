@@ -50,6 +50,11 @@ public class SubscriptionRepositoryProxy extends AbstractProxy<SubscriptionRepos
         return target.findReferenceIdsOrderByNumberOfSubscriptions(criteria, order);
     }
 
+    @Override
+    public Set<String> findApiIds(SubscriptionCriteria criteria) {
+        return target.findApiIds(criteria);
+    }
+
     public Optional<Subscription> findById(String s) throws TechnicalException {
         return target.findById(s);
     }

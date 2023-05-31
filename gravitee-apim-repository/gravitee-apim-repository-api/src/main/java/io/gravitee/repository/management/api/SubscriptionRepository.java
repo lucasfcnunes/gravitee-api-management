@@ -39,4 +39,6 @@ public interface SubscriptionRepository extends CrudRepository<Subscription, Str
     List<Subscription> findByIdIn(Collection<String> ids) throws TechnicalException;
 
     Set<String> findReferenceIdsOrderByNumberOfSubscriptions(SubscriptionCriteria criteria, Order order) throws TechnicalException;
+
+    Set<String> findApiIds(SubscriptionCriteria criteria);
 }

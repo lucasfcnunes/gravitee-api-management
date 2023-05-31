@@ -21,6 +21,7 @@ import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Sorts.ascending;
 import static com.mongodb.client.model.Sorts.descending;
 import static org.apache.commons.collections.CollectionUtils.isEmpty;
+import static org.springframework.data.mongodb.core.query.Criteria.where;
 
 import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.model.Aggregates;
@@ -30,14 +31,17 @@ import io.gravitee.common.data.domain.Page;
 import io.gravitee.repository.management.api.search.Order;
 import io.gravitee.repository.management.api.search.Pageable;
 import io.gravitee.repository.management.api.search.SubscriptionCriteria;
+import io.gravitee.repository.mongodb.management.internal.model.MembershipMongo;
 import io.gravitee.repository.mongodb.management.internal.model.SubscriptionMongo;
 import java.util.*;
+import java.util.stream.Stream;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.convert.MongoConverter;
+import org.springframework.data.mongodb.core.query.Query;
 
 /**
  * @author David BRASSELY (david.brassely at graviteesource.com)
@@ -187,6 +191,37 @@ public class SubscriptionMongoRepositoryImpl implements SubscriptionMongoReposit
             references.add(referenceId);
         });
         return references;
+    }
+
+    @Override
+    public Stream<String> findApiIds(SubscriptionCriteria criteria) {
+        Query query = new Query();
+        query.fields().include("api").exclude("_id");
+        if (null != criteria.getIds() && !criteria.getIds().isEmpty()) {
+            query.addCriteria(where("id").in(criteria.getIds()));
+        }
+        if (null != criteria.getExcludedApis() && !criteria.getExcludedApis().isEmpty()) {
+            query.addCriteria(where("api").not().in(criteria.getExcludedApis()));
+        }
+        if (null != criteria.getApis() && !criteria.getApis().isEmpty()) {
+            query.addCriteria(where("api").in(criteria.getApis()));
+        }
+        if (null != criteria.getPlans() && !criteria.getPlans().isEmpty()) {
+            query.addCriteria(where("plan").in(criteria.getPlans()));
+        }
+        if (null != criteria.getStatuses() && !criteria.getStatuses().isEmpty()) {
+            query.addCriteria(where("status").in(criteria.getStatuses()));
+        }
+        if (null != criteria.getApplications() && !criteria.getApplications().isEmpty()) {
+            query.addCriteria(where("application").in(criteria.getApplications()));
+        }
+        if (null != criteria.getPlanSecurityTypes() && !criteria.getPlanSecurityTypes().isEmpty()) {
+            query.addCriteria(where("planSecurityTypes").in(criteria.getPlanSecurityTypes()));
+        }
+        if (null != criteria.getClientId()) {
+            query.addCriteria(where("clientId").is(criteria.getClientId()));
+        }
+        return mongoTemplate.findDistinct(query, "api", SubscriptionMongo.class, String.class).parallelStream();
     }
 
     private Page<SubscriptionMongo> buildSubscriptionsPage(

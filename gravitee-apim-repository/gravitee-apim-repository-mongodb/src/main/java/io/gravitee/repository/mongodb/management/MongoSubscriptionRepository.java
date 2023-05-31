@@ -73,6 +73,11 @@ public class MongoSubscriptionRepository implements SubscriptionRepository {
     }
 
     @Override
+    public Set<String> findApiIds(SubscriptionCriteria criteria) {
+        return internalSubscriptionRepository.findApiIds(criteria).collect(Collectors.toSet());
+    }
+
+    @Override
     public Optional<Subscription> findById(String subscription) throws TechnicalException {
         SubscriptionMongo planMongo = internalSubscriptionRepository.findById(subscription).orElse(null);
         return Optional.ofNullable(map(planMongo));

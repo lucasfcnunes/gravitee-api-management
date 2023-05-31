@@ -196,6 +196,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -1197,13 +1198,9 @@ public class ApiServiceImpl extends AbstractService implements ApiService {
                             .collect(toSet())
                     );
 
-                    final Collection<SubscriptionEntity> subscriptions = subscriptionService.search(executionContext, query);
-                    if (subscriptions != null && !subscriptions.isEmpty()) {
-                        apiCriteriaList.add(
-                            queryToCriteria(executionContext, apiQuery)
-                                .ids(subscriptions.stream().map(SubscriptionEntity::getApi).distinct().collect(toList()))
-                                .build()
-                        );
+                    final Set<String> subscriptionApiIds = subscriptionService.findApiIds(query);
+                    if (!subscriptionApiIds.isEmpty()) {
+                        apiCriteriaList.add(queryToCriteria(executionContext, apiQuery).ids(subscriptionApiIds).build());
                     }
                 }
             }

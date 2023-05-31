@@ -87,5 +87,7 @@ public interface SubscriptionService {
 
     Set<String> findReferenceIdsOrderByNumberOfSubscriptions(SubscriptionQuery subscriptionQuery, Order order);
 
+    Set<String> findApiIds(SubscriptionQuery query);
+
     Set<SubscriptionEntity> findByIdIn(Collection<String> subscriptions);
 }

@@ -1238,6 +1238,11 @@ public class SubscriptionServiceImpl extends AbstractService implements Subscrip
         }
     }
 
+    @Override
+    public Set<String> findApiIds(SubscriptionQuery query) {
+        return subscriptionRepository.findApiIds(toSubscriptionCriteriaBuilder(query).build());
+    }
+
     private String getName(Object map) {
         return map == null ? "" : ((Map) map).get("name").toString();
     }
