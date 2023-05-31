@@ -25,7 +25,6 @@ import io.gravitee.rest.api.model.permissions.ApiPermission;
 import io.gravitee.rest.api.model.permissions.RolePermissionAction;
 import io.gravitee.rest.api.service.*;
 import io.gravitee.rest.api.service.common.ExecutionContext;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.Set;
 import org.slf4j.Logger;
@@ -62,7 +61,13 @@ public class AccessControlServiceImpl extends AbstractService implements AccessC
             final ApiQuery apiQuery = new ApiQuery();
             apiQuery.setIds(singletonList(apiEntity.getId()));
             apiQuery.setLifecycleStates(singletonList(io.gravitee.rest.api.model.api.ApiLifecycleState.PUBLISHED));
-            Set<String> publishedByUser = apiService.findIdsByUser(executionContext, getAuthenticatedUser().getUsername(), apiQuery, null, false);
+            Set<String> publishedByUser = apiService.findIdsByUser(
+                executionContext,
+                getAuthenticatedUser().getUsername(),
+                apiQuery,
+                null,
+                false
+            );
             return publishedByUser.contains(apiEntity.getId());
         }
         return false;
