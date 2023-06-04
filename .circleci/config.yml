@@ -483,85 +483,84 @@ jobs:
                             version: $TAG
             - cmd-docker-azure-logout
 
-    job-test:
-        docker:
-            - image: cimg/openjdk:11.0
-        resource_class: medium
-        steps:
-            - checkout
-            - attach_workspace:
-                  at: .
-            - cmd-restore-maven-job-cache:
-                  jobName: job-test
-            - restore_cache:
-                  keys:
-                      - gravitee-api-management-v8-build-apim-{{ .Environment.CIRCLE_WORKFLOW_WORKSPACE_ID }}
-            - run:
-                  name: Run tests
-                  command: |
-                      mvn -U -pl 'gravitee-apim-definition, gravitee-apim-rest-api, gravitee-apim-gateway' -amd --fail-fast -s .gravitee.settings.xml test --no-transfer-progress -Dskip.validation=true -T 2C
-            - run:
-                  name: Save test results
-                  command: |
-                      mkdir -p ~/test-results/junit/
-                      find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} ~/test-results/junit/ \;
-                  when: always
-            - cmd-notify-on-failure
-            - cmd-save-maven-job-cache:
-                  jobName: job-test
-            - store_test_results:
-                  path: ~/test-results
-            - persist_to_workspace:
-                  root: .
-                  paths:
-                      - gravitee-apim-gateway/gravitee-apim-gateway-coverage/target/site/jacoco-aggregate/
-                      - gravitee-apim-rest-api/gravitee-apim-rest-api-coverage/target/site/jacoco-aggregate/
-                      - gravitee-apim-definition/gravitee-apim-definition-coverage/target/site/jacoco-aggregate/
-
 #    job-test:
-#      docker:
-#        - image: cimg/openjdk:11.0
-#      resource_class: medium
-#      parallelism: 4
-#      steps:
-#        - checkout
-#        - attach_workspace:
-#            at: .
-#        - cmd-restore-maven-job-cache:
-#            jobName: job-test
-#        - restore_cache:
-#            keys:
-#              - gravitee-api-management-v8-build-apim-{{ .Environment.CIRCLE_WORKFLOW_WORKSPACE_ID }}
-#        - run:
-#            name: Run tests
-#            command: |
-#              # find all test files for this stage (Surefire test stage), translating files to classnames
-#              circleci tests glob src/test/java/**/*Test*.java | sed -e 's#^src/test/java/\(.*\)\.java#\1#' | tr "/" "." > surefire_classnames
-#
-#              # split the classnames by timing to get those assigned to this node
-#              cat surefire_classnames | circleci tests split --split-by=timings --timings-type=classname > /tmp/this_node_tests
-#
-#              # use grep to invert the include list to an exclude list
-#              cat surefire_classnames | grep -xvf /tmp/this_node_tests > surefire_classnames_ignore_list
-#
-#              mvn -U -pl 'gravitee-apim-definition, gravitee-apim-rest-api, gravitee-apim-gateway' -amd --fail-fast -s .gravitee.settings.xml test --no-transfer-progress -Dskip.validation=true -Dsurefire.excludesFile=surefire_classnames_ignore_list -T 2C
-#        - run:
-#            name: Save test results
-#            command: |
-#              mkdir -p ~/test-results/junit/
-#              find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} ~/test-results/junit/ \;
-#            when: always
-#        - cmd-notify-on-failure
-#        - cmd-save-maven-job-cache:
-#            jobName: job-test
-#        - store_test_results:
-#            path: ~/test-results
-#        - persist_to_workspace:
-#            root: .
-#            paths:
-#              - gravitee-apim-gateway/gravitee-apim-gateway-coverage/target/site/jacoco-aggregate/
-#              - gravitee-apim-rest-api/gravitee-apim-rest-api-coverage/target/site/jacoco-aggregate/
-#              - gravitee-apim-definition/gravitee-apim-definition-coverage/target/site/jacoco-aggregate/
+#        docker:
+#            - image: cimg/openjdk:11.0
+#        resource_class: medium
+#        steps:
+#            - checkout
+#            - attach_workspace:
+#                  at: .
+#            - cmd-restore-maven-job-cache:
+#                  jobName: job-test
+#            - restore_cache:
+#                  keys:
+#                      - gravitee-api-management-v8-build-apim-{{ .Environment.CIRCLE_WORKFLOW_WORKSPACE_ID }}
+#            - run:
+#                  name: Run tests
+#                  command: |
+#                      mvn -U -pl 'gravitee-apim-definition, gravitee-apim-rest-api, gravitee-apim-gateway' -amd --fail-fast -s .gravitee.settings.xml test --no-transfer-progress -Dskip.validation=true -T 2C
+#            - run:
+#                  name: Save test results
+#                  command: |
+#                      mkdir -p ~/test-results/junit/
+#                      find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} ~/test-results/junit/ \;
+#                  when: always
+#            - cmd-notify-on-failure
+#            - cmd-save-maven-job-cache:
+#                  jobName: job-test
+#            - store_test_results:
+#                  path: ~/test-results
+#            - persist_to_workspace:
+#                  root: .
+#                  paths:
+#                      - gravitee-apim-gateway/gravitee-apim-gateway-coverage/target/site/jacoco-aggregate/
+#                      - gravitee-apim-rest-api/gravitee-apim-rest-api-coverage/target/site/jacoco-aggregate/
+#                      - gravitee-apim-definition/gravitee-apim-definition-coverage/target/site/jacoco-aggregate/
+    job-test:
+      docker:
+        - image: cimg/openjdk:11.0
+      resource_class: medium
+      parallelism: 4
+      steps:
+        - checkout
+        - attach_workspace:
+            at: .
+        - cmd-restore-maven-job-cache:
+            jobName: job-test
+        - restore_cache:
+            keys:
+              - gravitee-api-management-v8-build-apim-{{ .Environment.CIRCLE_WORKFLOW_WORKSPACE_ID }}
+        - run:
+            name: Run tests
+            command: |
+              # find all test files for this stage (Surefire test stage), translating files to classnames
+              circleci tests glob src/test/java/**/*Test*.java | sed -e 's#^src/test/java/\(.*\)\.java#\1#' | tr "/" "." > surefire_classnames
+
+              # split the classnames by timing to get those assigned to this node
+              cat surefire_classnames | circleci tests split --split-by=timings --timings-type=classname > /tmp/this_node_tests
+
+              # use grep to invert the include list to an exclude list
+              cat surefire_classnames | grep -xvf /tmp/this_node_tests > surefire_classnames_ignore_list
+
+              mvn -U -pl 'gravitee-apim-definition, gravitee-apim-rest-api, gravitee-apim-gateway' -amd --fail-fast -s .gravitee.settings.xml test --no-transfer-progress -Dskip.validation=true -Dsurefire.excludesFile=surefire_classnames_ignore_list -T 2C
+        - run:
+            name: Save test results
+            command: |
+              mkdir -p ~/test-results/junit/
+              find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} ~/test-results/junit/ \;
+            when: always
+        - cmd-notify-on-failure
+        - cmd-save-maven-job-cache:
+            jobName: job-test
+        - store_test_results:
+            path: ~/test-results
+        - persist_to_workspace:
+            root: .
+            paths:
+              - gravitee-apim-gateway/gravitee-apim-gateway-coverage/target/site/jacoco-aggregate/
+              - gravitee-apim-rest-api/gravitee-apim-rest-api-coverage/target/site/jacoco-aggregate/
+              - gravitee-apim-definition/gravitee-apim-definition-coverage/target/site/jacoco-aggregate/
 
     job-test-repository:
         machine:
