@@ -37,3 +37,8 @@ tasks:
     desc: "Use spectral linter to validate OpenAPI specifications"
     cmds:
       - spectral lint ./gravitee-apim-rest-api/gravitee-apim-rest-api-management-v2/gravitee-apim-rest-api-management-v2-rest/src/main/resources/openapi/management-openapi-v2.yaml --ruleset .openapi-spectral.yml
+
+  lint-circleci:
+    desc: "Use spectral linter to validate CircleCI config"
+    cmds:
+      - spectral lint ./.circleci/config.yml --ruleset .circleci-spectral.yml

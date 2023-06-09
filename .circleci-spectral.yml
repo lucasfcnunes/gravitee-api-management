@@ -1,0 +1,25 @@
+rules:
+  orbs-are-sorted-alphabetically:
+    given: $.orbs
+    then:
+      function: alphabetical
+    message: Orbs should be sorted alphabetically
+    severity: warn
+
+  command-starts-with-cmd:
+    given: $.commands[*]~
+    then:
+      function: pattern
+      functionOptions:
+        match: "^cmd-"
+    message: Commands should start with `cmd-`
+    severity: error
+
+  job-starts-with-job:
+    given: $.jobs[*]~
+    then:
+      function: pattern
+      functionOptions:
+        match: '^job-'
+    message: Jobs should start with `job-`
+    severity: error

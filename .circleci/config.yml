@@ -1,13 +1,13 @@
 version: 2.1
 
 orbs:
-    slack: circleci/slack@4.12.5
-    keeper: gravitee-io/keeper@0.6.3
-    gh: circleci/github-cli@1.0.5
-    aws-cli: circleci/aws-cli@2.0.6
     artifactory-orb: jfrog/artifactory-orb@1.0.1
+    aws-cli: circleci/aws-cli@2.0.6
     aws-s3: circleci/aws-s3@3.1.1
+    gh: circleci/github-cli@1.0.5
     helm: circleci/helm@2.0.1
+    keeper: gravitee-io/keeper@0.6.3
+    slack: circleci/slack@4.12.5
 
 executors:
     ubuntu:
@@ -85,7 +85,7 @@ commands:
                       docker context create tls-env
                       docker buildx create tls-env --use
 
-    install-jdk-17-for-machine:
+    cmd-install-jdk-17-for-machine:
         description: Install JDK 17 on machine executor
         steps:
             - run:
@@ -327,7 +327,7 @@ commands:
                       # Workaround for sharing this variable to the next steps
                       echo "export SANITIZED_BRANCH=$SANITIZED_BRANCH" >> $BASH_ENV
 
-    execute-tests:
+    cmd-execute-tests:
         description: execute the unit tests of the folder
         parameters:
             folder:
@@ -347,7 +347,7 @@ commands:
                   name: execute the units tests in << parameters.folder >>.
                   command: helm unittest -3 -f '<< parameters.files >>' << parameters.folder >> -t JUnit -o << parameters.output-file >>
 
-    lint:
+    cmd-lint:
         description: Lint the helm charts available in the folder
         parameters:
             folder:
@@ -674,7 +674,7 @@ jobs:
             name: ubuntu
             class: medium
         steps:
-            - install-jdk-17-for-machine
+            - cmd-install-jdk-17-for-machine
             - checkout
             - attach_workspace:
                   at: .
@@ -746,7 +746,7 @@ jobs:
             name: ubuntu
             class: large
         steps:
-            - install-jdk-17-for-machine
+            - cmd-install-jdk-17-for-machine
             - checkout
             - attach_workspace:
                   at: .
@@ -1432,7 +1432,7 @@ jobs:
             - when:
                   condition: << parameters.version >>
                   steps:
-                      - install-jdk-17-for-machine
+                      - cmd-install-jdk-17-for-machine
                       - checkout
                       - attach_workspace:
                             at: .
@@ -1474,7 +1474,7 @@ jobs:
             - when:
                   condition: << parameters.version >>
                   steps:
-                      - install-jdk-17-for-machine
+                      - cmd-install-jdk-17-for-machine
                       - checkout
                       - attach_workspace:
                             at: .
@@ -1504,7 +1504,7 @@ jobs:
                             name: Version not set - nothing to run
                             command: exit 0
 
-    elastic-test-container:
+    job-elastic-test-container:
         parameters:
             version:
                 type: string
@@ -1520,12 +1520,12 @@ jobs:
             - when:
                   condition: << parameters.version >>
                   steps:
-                      - install-jdk-17-for-machine
+                      - cmd-install-jdk-17-for-machine
                       - checkout
                       - attach_workspace:
                             at: .
                       - cmd-restore-maven-job-cache:
-                            jobName: elastic-test-container
+                            jobName: job-elastic-test-container
                       - run:
                             name: Run Elasticsearch repository tests with version << parameters.version >>
                             command: |
@@ -1538,7 +1538,7 @@ jobs:
                                 find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} ~/test-results/junit/ \;
                             when: always
                       - cmd-save-maven-job-cache:
-                            jobName: elastic-test-container
+                            jobName: job-elastic-test-container
                       - store_test_results:
                             path: ~/test-results
                       - cmd-notify-on-failure
@@ -1917,9 +1917,9 @@ jobs:
             - run:
                   name: install helm-unittest plugin
                   command: helm plugin install https://github.com/quintush/helm-unittest --version 0.2.11
-            - lint:
+            - cmd-lint:
                   folder: helm/
-            - execute-tests:
+            - cmd-execute-tests:
                   folder: helm/
                   files: tests/**/*.yaml
                   output-file: apim-result.xml
@@ -1979,9 +1979,9 @@ workflows:
                   requires:
                       - Build backend
             - job-test-apim-charts:
-                name: Test Helm chart
-                requires:
-                  - Build backend
+                  name: Test Helm chart
+                  requires:
+                      - Build backend
             - job-sonarcloud-analysis:
                   name: Sonar - << matrix.working_directory >>
                   matrix:
@@ -2446,7 +2446,7 @@ workflows:
                   matrix:
                       parameters:
                           version: ["4", "5", "6.0"]
-            - elastic-test-container:
+            - job-elastic-test-container:
                   name: Run ElasticSearch repositories tests << matrix.version >>
                   context: cicd-orchestrator
                   requires:
@@ -2455,7 +2455,7 @@ workflows:
                       parameters:
                           engineType: ["elasticsearch"]
                           version: ["5.6.16", "6.8.23", "7.17.8", "8.7.0"]
-            - elastic-test-container:
+            - job-elastic-test-container:
                   name: Run Opensearch repositories tests << matrix.version >>
                   context: cicd-orchestrator
                   requires:
