@@ -178,6 +178,16 @@ public class JdbcTestRepositoryInitializer implements TestRepositoryInitializer 
                 new ClassLoaderResourceAccessor(this.getClass().getClassLoader()),
                 new JdbcConnection(conn)
             );
+            // Magic to create the databasechangelog table with a primary key
+            conn
+                .prepareStatement(
+                    "CREATE TABLE " +
+                    prefix +
+                    "databasechangelog" +
+                    " (ID VARCHAR(255) NOT NULL, AUTHOR VARCHAR(255) NOT NULL, FILENAME VARCHAR(255) NOT NULL, DATEEXECUTED datetime NOT NULL, ORDEREXECUTED INT NOT NULL, EXECTYPE VARCHAR(10) NOT NULL, MD5SUM VARCHAR(35) NULL, `DESCRIPTION` VARCHAR(255) NULL, COMMENTS VARCHAR(255) NULL, TAG VARCHAR(255) NULL, LIQUIBASE VARCHAR(20) NULL, CONTEXTS VARCHAR(255) NULL, LABELS VARCHAR(255) NULL, DEPLOYMENT_ID VARCHAR(10) NULL," +
+                    "PRIMARY KEY (ID, AUTHOR, FILENAME))"
+                )
+                .execute();
             liquibase.setIgnoreClasspathPrefix(true);
             liquibase.update((Contexts) null);
         } catch (final Exception ex) {

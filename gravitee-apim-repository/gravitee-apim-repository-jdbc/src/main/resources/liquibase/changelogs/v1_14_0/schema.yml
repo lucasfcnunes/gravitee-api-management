@@ -6,7 +6,7 @@ databaseChangeLog:
         - createTable:
             tableName: ${gravitee_prefix}users
             columns:
-                - column: {name: id, type: nvarchar(64), constraints: { nullable: false } }
+                - column: {name: id, type: nvarchar(64), constraints: { nullable: false, primaryKey: true, primaryKeyConstraintName: pk_users } }
                 - column: {name: username, type: nvarchar(64), constraints: { nullable: false } }
                 - column: {name: source, type: nvarchar(128), constraints: { nullable: true } }
                 - column: {name: source_id, type: nvarchar(128), constraints: { nullable: true } }

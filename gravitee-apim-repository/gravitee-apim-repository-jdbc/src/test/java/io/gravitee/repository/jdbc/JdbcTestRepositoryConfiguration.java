@@ -74,6 +74,7 @@ public class JdbcTestRepositoryConfiguration {
                 // I let this configuration for documentation purpose, but it does not solve our performance issue.
                 // See --> https://dev.mysql.com/doc/refman/8.0/en/innodb-parameters.html
                 containerBean = new MySQLContainer<>(dockerImageName);
+                containerBean.withCommand("--sql-require-primary-key=ON");
                 break;
             case MARIADB:
                 // It appears that the limitation is not entirely due to the DB engine configuration, but also in the way I/O are managed between container and host.
