@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular/core';
 import { FormGroup } from '@angular/forms';
+import { StateService } from '@uirouter/core';
 
 import { ApiCreationStepService } from '../../services/api-creation-step.service';
 import { Step5DocumentationComponent } from '../step-5-documentation/step-5-documentation.component';
 import { ConstantsService, PlanMenuItemVM } from '../../../../../../services-ngx/constants.service';
 import { CreatePlanV4 } from '../../../../../../entities/management-api-v2';
+import { UIRouterState } from '../../../../../../ajs-upgraded-providers';
 
 @Component({
   selector: 'step-4-security-1-plans-list',
@@ -45,7 +47,11 @@ export class Step4Security1PlansListComponent implements OnInit {
   public form = new FormGroup({});
   displayedColumns: string[] = ['name', 'mode', 'security', 'actions'];
 
-  constructor(private readonly stepService: ApiCreationStepService, private readonly constantsService: ConstantsService) {}
+  constructor(
+    private readonly stepService: ApiCreationStepService,
+    private readonly constantsService: ConstantsService,
+    @Inject(UIRouterState) private readonly ajsState: StateService,
+  ) {}
 
   ngOnInit(): void {
     this.planMenuItems = this.constantsService.getEnabledPlanMenuItems();
@@ -81,5 +87,9 @@ export class Step4Security1PlansListComponent implements OnInit {
 
   removePlan(plan: CreatePlanV4) {
     this.removePlanClicked.emit(plan);
+  }
+
+  navigateToSettings() {
+    this.ajsState.go('management.settings.portal');
   }
 }

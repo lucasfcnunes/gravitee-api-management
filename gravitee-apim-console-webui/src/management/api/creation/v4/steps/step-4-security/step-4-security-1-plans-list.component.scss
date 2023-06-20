@@ -12,6 +12,11 @@ $typography: map.get(gio.$mat-theme, typography);
     vertical-align: center;
     padding-bottom: 8px;
 
+    // todo this does not work
+    a {
+      text-decoration: underline;
+    }
+
     &__title {
       @include mat.typography-level($typography, subheading-2);
     }

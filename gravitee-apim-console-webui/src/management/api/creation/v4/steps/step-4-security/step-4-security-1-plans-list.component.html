@@ -25,6 +25,10 @@
     <button mat-menu-item *ngFor="let planMenuItem of planMenuItems" (click)="addPlan(planMenuItem)">{{ planMenuItem.name }}</button>
   </mat-menu>
 </div>
+
+<gio-banner type="error" *ngIf="planMenuItems.length < 1"
+  ><div>You do not have any compatible plan type activated. Please check your <a (click)="navigateToSettings()"> settings</a></div>
+</gio-banner>
 <form [formGroup]="form" (ngSubmit)="save()">
   <table mat-table class="step-4-security-1-plans-list__table" [dataSource]="plans" aria-label="security plans">
     <ng-container matColumnDef="name">
