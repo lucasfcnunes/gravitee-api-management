@@ -15,13 +15,24 @@
  */
 import { Component, Inject, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import {filter, takeUntil, tap} from 'rxjs/operators';
 import { StateService } from '@uirouter/core';
 import { DatePipe } from '@angular/common';
 
-import { SubscriptionStatus } from '../../../../../entities/management-api-v2';
+import {Plan, SubscriptionStatus} from '../../../../../entities/management-api-v2';
 import { ApiSubscriptionV2Service } from '../../../../../services-ngx/api-subscription-v2.service';
 import { UIRouterState, UIRouterStateParams } from '../../../../../ajs-upgraded-providers';
+import {
+  GioUsersSelectorComponent,
+  GioUsersSelectorData
+} from "../../../../../shared/components/gio-users-selector/gio-users-selector.component";
+import {SearchableUser} from "../../../../../entities/user/searchableUser";
+import {isEmpty} from "lodash";
+import {MatDialog} from "@angular/material/dialog";
+import {
+  ApiPortalSubscriptionTransferComponent, SubscriptionTransferData
+} from "../components/transfer/api-portal-subscription-transfer.component";
+import {ApiPlanV2Service} from "../../../../../services-ngx/api-plan-v2.service";
 
 interface SubscriptionDetailVM {
   id: string;
@@ -49,19 +60,23 @@ interface SubscriptionDetailVM {
 export class ApiPortalSubscriptionEditComponent implements OnInit {
   private unsubscribe$: Subject<boolean> = new Subject<boolean>();
   subscription: SubscriptionDetailVM;
+  private apiId: string;
+  private planId: string;
   constructor(
     @Inject(UIRouterStateParams) private readonly ajsStateParams,
     @Inject(UIRouterState) private readonly ajsState: StateService,
     private readonly apiSubscriptionService: ApiSubscriptionV2Service,
+    private readonly apiPlanService: ApiPlanV2Service,
     private datePipe: DatePipe,
+    private readonly matDialog: MatDialog,
   ) {}
 
   ngOnInit(): void {
-    const apiId = this.ajsStateParams.apiId;
+    this.apiId = this.ajsStateParams.apiId;
     const subscriptionId = this.ajsStateParams.subscriptionId;
 
     this.apiSubscriptionService
-      .getById(apiId, subscriptionId, ['plan', 'application', 'subscribedBy'])
+      .getById(this.apiId, subscriptionId, ['plan', 'application', 'subscribedBy'])
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe((subscription) => {
         if (subscription) {
@@ -84,6 +99,7 @@ export class ApiPortalSubscriptionEditComponent implements OnInit {
             closedAt: this.formatDate(subscription.closedAt),
             domain: subscription.application.domain ?? '-',
           };
+          this.planId = subscription.plan.id;
         }
       });
   }
@@ -98,6 +114,28 @@ export class ApiPortalSubscriptionEditComponent implements OnInit {
 
   transferSubscription() {
     // Do nothing for now
+    // Find all plans for an API and only list those that the subscription is not attached to
+    // If one of the plans has general conditions, must display message + disable radio button for that given plan
+
+    const plans: Plan[] = [];
+
+    this.matDialog
+      .open<ApiPortalSubscriptionTransferComponent, SubscriptionTransferData, Plan>(ApiPortalSubscriptionTransferComponent, {
+        width: '500px',
+        data: {
+          apiId: this.apiId,
+          planId: this.planId,
+          subscriptionId: this.subscription.id
+        },
+        role: 'alertdialog',
+        id: 'transferSubscriptionDialog',
+      })
+      .afterClosed()
+      .pipe(
+        takeUntil(this.unsubscribe$),
+      )
+      .subscribe((plan) => {
+        console.log(plan)});
   }
 
   pauseSubscription() {

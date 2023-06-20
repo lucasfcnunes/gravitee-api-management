@@ -31,12 +31,15 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { ApiPortalSubscriptionListComponent } from './list/api-portal-subscription-list.component';
 import { ApiPortalSubscriptionEditComponent } from './edit/api-portal-subscription-edit.component';
+import { ApiPortalSubscriptionTransferComponent } from './components/transfer/api-portal-subscription-transfer.component';
 
 import { GioTableWrapperModule } from '../../../../shared/components/gio-table-wrapper/gio-table-wrapper.module';
 import { GioPermissionModule } from '../../../../shared/components/gio-permission/gio-permission.module';
+import {MatDialogModule} from "@angular/material/dialog";
+import {MatRadioModule} from "@angular/material/radio";
 
 @NgModule({
-  declarations: [ApiPortalSubscriptionListComponent, ApiPortalSubscriptionEditComponent],
+  declarations: [ApiPortalSubscriptionListComponent, ApiPortalSubscriptionEditComponent, ApiPortalSubscriptionTransferComponent],
   exports: [ApiPortalSubscriptionListComponent, ApiPortalSubscriptionEditComponent],
   imports: [
     CommonModule,
@@ -57,6 +60,8 @@ import { GioPermissionModule } from '../../../../shared/components/gio-permissio
     MatSnackBarModule,
     GioIconsModule,
     GioLoaderModule,
+    MatDialogModule,
+    MatRadioModule,
   ],
   providers: [DatePipe],
 })
