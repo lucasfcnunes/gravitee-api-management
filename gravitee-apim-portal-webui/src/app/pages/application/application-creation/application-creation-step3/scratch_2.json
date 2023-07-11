@@ -1,0 +1,68 @@
+{
+  "id": "88942e9b-9cd4-30bf-be3c-1d266ae3cf49",
+  "name": "Mock",
+  "version": "1.0",
+  "gravitee": "2.0.0",
+  "execution_mode": "v3",
+  "flow_mode": "DEFAULT",
+  "proxy": {
+    "virtual_hosts": [
+      {
+        "path": "/mock/"
+      }
+    ],
+    "strip_context_path": false,
+    "preserve_host": false,
+    "logging": {
+      "mode": "CLIENT_PROXY",
+      "content": "HEADERS_PAYLOADS",
+      "scope": "REQUEST_RESPONSE",
+      "condition": "true"
+    },
+    "groups": [
+      {
+        "name": "default-group",
+        "endpoints": [
+          {
+            "healthcheck": {
+              "enabled": false
+            },
+            "backup": false,
+            "inherit": true,
+            "name": "default",
+            "weight": 1,
+            "type": "http",
+            "target": "http://apim-passerelle-demo.omogen.in.cloe.education.gouv.fr/dbsierh"
+          }
+        ],
+        "load_balancing": {
+          "type": "ROUND_ROBIN"
+        },
+        "http": {
+          "connectTimeout": 5000,
+          "idleTimeout": 60000,
+          "keepAlive": true,
+          "readTimeout": 10000,
+          "pipelining": false,
+          "maxConcurrentConnections": 100,
+          "useCompression": true,
+          "followRedirects": false
+        }
+      }
+    ],
+    "cors": {
+      "enabled": true,
+      "allowCredentials": false,
+      "allowOrigin": [
+        "*"
+      ],
+      "allowHeaders": [],
+      "allowMethods": [
+        "GET"
+      ],
+      "exposeHeaders": [],
+      "maxAge": -1
+    }
+  },
+  "properties": []
+}
