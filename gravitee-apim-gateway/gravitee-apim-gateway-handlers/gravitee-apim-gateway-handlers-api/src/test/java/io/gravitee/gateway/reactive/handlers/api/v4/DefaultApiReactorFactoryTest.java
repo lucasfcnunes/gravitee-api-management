@@ -15,14 +15,6 @@
  */
 package io.gravitee.gateway.reactive.handlers.api.v4;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import io.gravitee.definition.model.DefinitionVersion;
 import io.gravitee.definition.model.v4.ApiType;
 import io.gravitee.definition.model.v4.listener.http.HttpListener;
@@ -49,6 +41,7 @@ import io.gravitee.gateway.resource.internal.v4.DefaultResourceManager;
 import io.gravitee.node.api.Node;
 import io.gravitee.node.api.configuration.Configuration;
 import io.gravitee.node.container.spring.SpringEnvironmentConfiguration;
+import io.gravitee.node.plugin.cache.standalone.StandaloneCacheManager;
 import io.gravitee.plugin.apiservice.ApiServicePluginManager;
 import io.gravitee.plugin.core.api.ConfigurablePluginManager;
 import io.gravitee.plugin.endpoint.EndpointConnectorPluginManager;
@@ -56,8 +49,6 @@ import io.gravitee.plugin.entrypoint.EntrypointConnectorPluginManager;
 import io.gravitee.plugin.policy.PolicyPlugin;
 import io.gravitee.plugin.resource.ResourcePlugin;
 import io.gravitee.resource.api.ResourceManager;
-import java.util.Collections;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -68,6 +59,17 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.env.StandardEnvironment;
+
+import java.util.Collections;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author David BRASSELY (david.brassely at graviteesource.com)
@@ -131,17 +133,18 @@ public class DefaultApiReactorFactoryTest {
         cut =
             new DefaultApiReactorFactory(
                 applicationContext,
-                configuration,
-                node,
-                policyFactory,
-                entrypointConnectorPluginManager,
-                endpointConnectorPluginManager,
-                apiServicePluginManager,
-                platformPolicyChainFactory,
-                organizationManager,
-                flowResolverFactory,
-                requestTimeoutConfiguration,
-                reporterService
+                    configuration,
+                    node,
+                    policyFactory,
+                    entrypointConnectorPluginManager,
+                    endpointConnectorPluginManager,
+                    apiServicePluginManager,
+                    platformPolicyChainFactory,
+                    organizationManager,
+                    flowResolverFactory,
+                    requestTimeoutConfiguration,
+                    reporterService,
+                    new StandaloneCacheManager()
             );
     }
 

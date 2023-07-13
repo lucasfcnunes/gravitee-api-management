@@ -51,6 +51,7 @@ import io.gravitee.gateway.reactive.reactor.v4.reactor.ReactorFactory;
 import io.gravitee.gateway.reactor.handler.context.ApiTemplateVariableProviderFactory;
 import io.gravitee.gateway.report.ReporterService;
 import io.gravitee.node.api.Node;
+import io.gravitee.node.api.cache.CacheManager;
 import io.gravitee.plugin.apiservice.ApiServicePluginManager;
 import io.gravitee.plugin.endpoint.EndpointConnectorPluginManager;
 import io.gravitee.plugin.entrypoint.EntrypointConnectorPluginManager;
@@ -136,8 +137,8 @@ public class ApiHandlerConfiguration {
     }
 
     @Bean
-    public ApiProcessorChainFactory apiProcessorChainFactory() {
-        return new ApiProcessorChainFactory(configuration, node);
+    public ApiProcessorChainFactory apiProcessorChainFactory(final CacheManager cacheManager) {
+        return new ApiProcessorChainFactory(configuration, node, cacheManager);
     }
 
     @Bean
@@ -190,9 +191,9 @@ public class ApiHandlerConfiguration {
 
     @Bean
     public io.gravitee.gateway.reactive.handlers.api.v4.processor.ApiProcessorChainFactory v4ApiProcessorChainFactory(
-        final ReporterService reporterService
+            final ReporterService reporterService, final CacheManager cacheManager
     ) {
-        return new io.gravitee.gateway.reactive.handlers.api.v4.processor.ApiProcessorChainFactory(configuration, node, reporterService);
+        return new io.gravitee.gateway.reactive.handlers.api.v4.processor.ApiProcessorChainFactory(configuration, node, reporterService, cacheManager);
     }
 
     @Bean
@@ -205,7 +206,8 @@ public class ApiHandlerConfiguration {
         OrganizationManager organizationManager,
         io.gravitee.gateway.reactive.handlers.api.flow.resolver.FlowResolverFactory flowResolverFactory,
         RequestTimeoutConfiguration requestTimeoutConfiguration,
-        ReporterService reporterService
+        ReporterService reporterService,
+        CacheManager cacheManager
     ) {
         return new DefaultApiReactorFactory(
             applicationContext,
@@ -219,7 +221,8 @@ public class ApiHandlerConfiguration {
             organizationManager,
             flowResolverFactory,
             requestTimeoutConfiguration,
-            reporterService
+            reporterService,
+            cacheManager
         );
     }
 }

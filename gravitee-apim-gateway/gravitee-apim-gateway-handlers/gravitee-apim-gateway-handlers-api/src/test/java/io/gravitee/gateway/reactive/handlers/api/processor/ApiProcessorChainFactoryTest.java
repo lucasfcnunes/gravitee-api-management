@@ -15,10 +15,6 @@
  */
 package io.gravitee.gateway.reactive.handlers.api.processor;
 
-import static io.gravitee.gateway.reactive.handlers.api.processor.subscription.SubscriptionProcessor.DEFAULT_CLIENT_IDENTIFIER_HEADER;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
-
 import io.gravitee.definition.model.Cors;
 import io.gravitee.definition.model.Logging;
 import io.gravitee.definition.model.LoggingMode;
@@ -41,17 +37,24 @@ import io.gravitee.gateway.reactive.handlers.api.processor.transaction.Transacti
 import io.gravitee.gateway.reactive.handlers.api.v4.processor.logging.LogRequestProcessor;
 import io.gravitee.gateway.reactive.handlers.api.v4.processor.logging.LogResponseProcessor;
 import io.gravitee.node.api.Node;
+import io.gravitee.node.api.cache.CacheManager;
 import io.gravitee.node.api.configuration.Configuration;
+import io.gravitee.node.plugin.cache.standalone.StandaloneCacheManager;
 import io.reactivex.rxjava3.core.Flowable;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
+
+import static io.gravitee.gateway.reactive.handlers.api.processor.subscription.SubscriptionProcessor.DEFAULT_CLIENT_IDENTIFIER_HEADER;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Jeoffrey HAEYAERT (jeoffrey.haeyaert at graviteesource.com)
@@ -67,14 +70,16 @@ class ApiProcessorChainFactoryTest {
     private Node node;
 
     private ApiProcessorChainFactory apiProcessorChainFactory;
+    private CacheManager standaloneCacheManager;
 
     @BeforeEach
     public void beforeEach() {
+        standaloneCacheManager = new StandaloneCacheManager();
         when(configuration.getProperty("services.tracing.enabled", Boolean.class, false)).thenReturn(false);
         when(configuration.getProperty("handlers.request.headers.x-forwarded-prefix", Boolean.class, false)).thenReturn(false);
         when(configuration.getProperty("handlers.request.client.header", String.class, DEFAULT_CLIENT_IDENTIFIER_HEADER))
-            .thenReturn(DEFAULT_CLIENT_IDENTIFIER_HEADER);
-        apiProcessorChainFactory = new ApiProcessorChainFactory(configuration, node);
+                .thenReturn(DEFAULT_CLIENT_IDENTIFIER_HEADER);
+        apiProcessorChainFactory = new ApiProcessorChainFactory(configuration, node, standaloneCacheManager);
     }
 
     @Test
@@ -153,7 +158,7 @@ class ApiProcessorChainFactoryTest {
     @Test
     void shouldReturnXForwardedBeforeApiExecutionWithOverrideXForwarded() {
         when(configuration.getProperty("handlers.request.headers.x-forwarded-prefix", Boolean.class, false)).thenReturn(true);
-        apiProcessorChainFactory = new ApiProcessorChainFactory(configuration, node);
+        apiProcessorChainFactory = new ApiProcessorChainFactory(configuration, node, standaloneCacheManager);
 
         io.gravitee.definition.model.Api apiModel = new io.gravitee.definition.model.Api();
         final Proxy proxy = new Proxy();
@@ -173,7 +178,7 @@ class ApiProcessorChainFactoryTest {
 
     @Test
     void shouldReturnPathParamProcessorBeforeApiExecution() {
-        apiProcessorChainFactory = new ApiProcessorChainFactory(configuration, node);
+        apiProcessorChainFactory = new ApiProcessorChainFactory(configuration, node, standaloneCacheManager);
 
         io.gravitee.definition.model.Api apiModel = new io.gravitee.definition.model.Api();
         final Proxy proxy = new Proxy();

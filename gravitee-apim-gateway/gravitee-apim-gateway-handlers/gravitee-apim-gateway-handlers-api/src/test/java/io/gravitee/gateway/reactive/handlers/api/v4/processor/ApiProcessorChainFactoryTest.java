@@ -15,10 +15,6 @@
  */
 package io.gravitee.gateway.reactive.handlers.api.v4.processor;
 
-import static io.gravitee.gateway.reactive.handlers.api.processor.subscription.SubscriptionProcessor.DEFAULT_CLIENT_IDENTIFIER_HEADER;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
-
 import io.gravitee.definition.model.Cors;
 import io.gravitee.definition.model.flow.Operator;
 import io.gravitee.definition.model.v4.analytics.Analytics;
@@ -26,7 +22,6 @@ import io.gravitee.definition.model.v4.analytics.logging.Logging;
 import io.gravitee.definition.model.v4.analytics.logging.LoggingMode;
 import io.gravitee.definition.model.v4.flow.Flow;
 import io.gravitee.definition.model.v4.flow.selector.HttpSelector;
-import io.gravitee.definition.model.v4.flow.selector.Selector;
 import io.gravitee.definition.model.v4.listener.http.HttpListener;
 import io.gravitee.definition.model.v4.listener.subscription.SubscriptionListener;
 import io.gravitee.gateway.reactive.core.processor.Processor;
@@ -45,16 +40,23 @@ import io.gravitee.gateway.reactive.handlers.api.v4.processor.logging.LogRequest
 import io.gravitee.gateway.reactive.handlers.api.v4.processor.logging.LogResponseProcessor;
 import io.gravitee.gateway.report.ReporterService;
 import io.gravitee.node.api.Node;
+import io.gravitee.node.api.cache.CacheManager;
 import io.gravitee.node.api.configuration.Configuration;
+import io.gravitee.node.plugin.cache.standalone.StandaloneCacheManager;
 import io.reactivex.rxjava3.core.Flowable;
-import java.util.List;
-import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import java.util.List;
+import java.util.Set;
+
+import static io.gravitee.gateway.reactive.handlers.api.processor.subscription.SubscriptionProcessor.DEFAULT_CLIENT_IDENTIFIER_HEADER;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Guillaume LAMIRAND (guillaume.lamirand at graviteesource.com)
@@ -73,14 +75,16 @@ class ApiProcessorChainFactoryTest {
     private ReporterService reporterService;
 
     private ApiProcessorChainFactory apiProcessorChainFactory;
+    private CacheManager standaloneCacheManager;
 
     @BeforeEach
     public void beforeEach() {
+        standaloneCacheManager = new StandaloneCacheManager();
         when(configuration.getProperty("services.tracing.enabled", Boolean.class, false)).thenReturn(false);
         when(configuration.getProperty("handlers.request.headers.x-forwarded-prefix", Boolean.class, false)).thenReturn(false);
         when(configuration.getProperty("handlers.request.client.header", String.class, DEFAULT_CLIENT_IDENTIFIER_HEADER))
-            .thenReturn(DEFAULT_CLIENT_IDENTIFIER_HEADER);
-        apiProcessorChainFactory = new ApiProcessorChainFactory(configuration, node, reporterService);
+                .thenReturn(DEFAULT_CLIENT_IDENTIFIER_HEADER);
+        apiProcessorChainFactory = new ApiProcessorChainFactory(configuration, node, reporterService, standaloneCacheManager);
     }
 
     @Test
@@ -168,7 +172,7 @@ class ApiProcessorChainFactoryTest {
     @Test
     void shouldReturnXForwardedBeforeApiExecutionChainWithHttpListenerAndOverrideXForwarded() {
         when(configuration.getProperty("handlers.request.headers.x-forwarded-prefix", Boolean.class, false)).thenReturn(true);
-        apiProcessorChainFactory = new ApiProcessorChainFactory(configuration, node, reporterService);
+        apiProcessorChainFactory = new ApiProcessorChainFactory(configuration, node, reporterService, standaloneCacheManager);
 
         io.gravitee.definition.model.v4.Api apiModel = new io.gravitee.definition.model.v4.Api();
         HttpListener httpListener = new HttpListener();
@@ -187,7 +191,7 @@ class ApiProcessorChainFactoryTest {
 
     @Test
     void shouldReturnPathParamProcessorBeforeApiExecution() {
-        apiProcessorChainFactory = new ApiProcessorChainFactory(configuration, node, reporterService);
+        apiProcessorChainFactory = new ApiProcessorChainFactory(configuration, node, reporterService, standaloneCacheManager);
 
         io.gravitee.definition.model.v4.Api apiModel = new io.gravitee.definition.model.v4.Api();
         HttpListener httpListener = new HttpListener();

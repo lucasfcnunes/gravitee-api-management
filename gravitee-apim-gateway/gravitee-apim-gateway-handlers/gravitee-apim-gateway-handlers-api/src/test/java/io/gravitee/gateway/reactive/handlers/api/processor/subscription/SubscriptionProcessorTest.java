@@ -15,6 +15,29 @@
  */
 package io.gravitee.gateway.reactive.handlers.api.processor.subscription;
 
+import io.gravitee.el.TemplateVariableProvider;
+import io.gravitee.gateway.api.service.Subscription;
+import io.gravitee.gateway.reactive.api.context.ContextAttributes;
+import io.gravitee.gateway.reactive.api.context.InternalContextAttributes;
+import io.gravitee.gateway.reactive.handlers.api.context.SubscriptionTemplateVariableProvider;
+import io.gravitee.gateway.reactive.handlers.api.processor.AbstractProcessorTest;
+import io.gravitee.node.plugin.cache.standalone.StandaloneCacheManager;
+import io.reactivex.rxjava3.observers.TestObserver;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.AdditionalMatchers;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import static io.gravitee.gateway.api.ExecutionContext.ATTR_APPLICATION;
 import static io.gravitee.gateway.api.ExecutionContext.ATTR_CLIENT_IDENTIFIER;
 import static io.gravitee.gateway.api.ExecutionContext.ATTR_PLAN;
@@ -29,27 +52,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.startsWith;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
-
-import io.gravitee.el.TemplateVariableProvider;
-import io.gravitee.gateway.api.service.Subscription;
-import io.gravitee.gateway.reactive.api.context.ContextAttributes;
-import io.gravitee.gateway.reactive.api.context.InternalContextAttributes;
-import io.gravitee.gateway.reactive.handlers.api.context.SubscriptionTemplateVariableProvider;
-import io.gravitee.gateway.reactive.handlers.api.processor.AbstractProcessorTest;
-import io.reactivex.rxjava3.observers.TestObserver;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayNameGeneration;
-import org.junit.jupiter.api.DisplayNameGenerator;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.AdditionalMatchers;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
  * @author Guillaume LAMIRAND (guillaume.lamirand at graviteesource.com)
@@ -69,10 +71,12 @@ class SubscriptionProcessorTest extends AbstractProcessorTest {
     ArgumentCaptor<Collection<TemplateVariableProvider>> providersCaptor;
 
     private SubscriptionProcessor cut;
+    private StandaloneCacheManager cacheManager;
 
     @BeforeEach
     void initProcessor() {
-        cut = SubscriptionProcessor.instance(null);
+        cacheManager = new StandaloneCacheManager();
+        cut = SubscriptionProcessor.instance(null, cacheManager);
         spyCtx.setAttribute(ATTR_PLAN, PLAN_ID);
         spyCtx.setAttribute(ATTR_APPLICATION, APPLICATION_ID);
         spyCtx.setAttribute(ATTR_SUBSCRIPTION_ID, SUBSCRIPTION_ID);
@@ -213,6 +217,7 @@ class SubscriptionProcessorTest extends AbstractProcessorTest {
             assertThat(spyCtx.metrics().getClientIdentifier()).doesNotContain(TRANSACTION_ID);
             assertThat(spyCtx.metrics().getClientIdentifier()).doesNotContain(REMOTE_ADDRESS);
             assertThat(spyCtx.metrics().getClientIdentifier()).doesNotContain(SUBSCRIPTION_ID);
+            assertThat(cacheManager.getOrCreateCache("subscription-processor-remote-address-hashes").get(REMOTE_ADDRESS)).isNotNull();
         }
 
         @Test
