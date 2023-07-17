@@ -50,7 +50,7 @@ import org.springframework.stereotype.Component;
  * @author GraviteeSource Team
  */
 @Component
-public class V4ApiService {
+public class V4ApiServiceCockpit {
 
     public static final String KEYLESS = "Keyless";
     public static final String KEYLESS_TYPE = "key-less";
@@ -64,7 +64,7 @@ public class V4ApiService {
     private final GraviteeMapper graviteeMapper;
     private final ObjectMapper mapper;
 
-    public V4ApiService(ApiService apiServiceV4, PlanService planServiceV4, ApiStateService apiStateService) {
+    public V4ApiServiceCockpit(ApiService apiServiceV4, PlanService planServiceV4, ApiStateService apiStateService) {
         this.apiServiceV4 = apiServiceV4;
         this.planServiceV4 = planServiceV4;
         this.apiStateService = apiStateService;

@@ -40,7 +40,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
  * @author GraviteeSource Team
  */
 @ExtendWith(MockitoExtension.class)
-public class V4ApiServiceTest {
+public class V4ApiServiceCockpitTest {
 
     @Mock
     private ApiService apiServiceV4;
@@ -51,11 +51,11 @@ public class V4ApiServiceTest {
     @Mock
     private ApiStateService apiStateService;
 
-    private V4ApiService service;
+    private V4ApiServiceCockpit service;
 
     @BeforeEach
     public void setUp() throws Exception {
-        service = new V4ApiService(apiServiceV4, planServiceV4, apiStateService);
+        service = new V4ApiServiceCockpit(apiServiceV4, planServiceV4, apiStateService);
     }
 
     @Test

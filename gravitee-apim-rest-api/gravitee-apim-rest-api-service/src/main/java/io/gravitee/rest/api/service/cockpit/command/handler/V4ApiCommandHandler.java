@@ -24,12 +24,14 @@ import io.gravitee.cockpit.api.command.v4api.V4ApiPayload;
 import io.gravitee.cockpit.api.command.v4api.V4ApiReply;
 import io.gravitee.rest.api.model.UserEntity;
 import io.gravitee.rest.api.service.UserService;
-import io.gravitee.rest.api.service.cockpit.services.V4ApiService;
+import io.gravitee.rest.api.service.cockpit.services.V4ApiServiceCockpit;
 import io.gravitee.rest.api.service.common.GraviteeContext;
 import io.reactivex.rxjava3.core.Single;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
+import static io.gravitee.rest.api.service.common.SecurityContextHelper.authenticateAs;
 
 /**
  * @author Ashraful Hasan (ashraful.hasan at graviteesource.com)
@@ -40,11 +42,11 @@ public class V4ApiCommandHandler implements CommandHandler<V4ApiCommand, V4ApiRe
 
     private final Logger logger = LoggerFactory.getLogger(V4ApiCommandHandler.class);
 
-    private final V4ApiService v4ApiService;
+    private final V4ApiServiceCockpit v4ApiServiceCockpit;
     private final UserService userService;
 
-    public V4ApiCommandHandler(V4ApiService v4ApiService, UserService userService) {
-        this.v4ApiService = v4ApiService;
+    public V4ApiCommandHandler(V4ApiServiceCockpit v4ApiServiceCockpit, UserService userService) {
+        this.v4ApiServiceCockpit = v4ApiServiceCockpit;
         this.userService = userService;
     }
 
@@ -57,8 +59,11 @@ public class V4ApiCommandHandler implements CommandHandler<V4ApiCommand, V4ApiRe
     public Single<V4ApiReply> handle(V4ApiCommand command) {
         final V4ApiPayload payload = command.getPayload();
         final UserEntity user = userService.findBySource(GraviteeContext.getExecutionContext(), "cockpit", payload.getUserId(), true);
+
+        authenticateAs(user);
+
         try {
-            return v4ApiService
+            return v4ApiServiceCockpit
                 .createPublishApi(user.getId(), payload.getApiDefinition())
                 .flatMap(apiEntity -> {
                     final V4ApiReply reply = new V4ApiReply(command.getId(), CommandStatus.SUCCEEDED);

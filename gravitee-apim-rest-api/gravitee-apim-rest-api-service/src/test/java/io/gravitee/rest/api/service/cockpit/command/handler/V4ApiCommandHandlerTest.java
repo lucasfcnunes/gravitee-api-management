@@ -29,7 +29,7 @@ import io.gravitee.cockpit.api.command.v4api.V4ApiReply;
 import io.gravitee.rest.api.model.UserEntity;
 import io.gravitee.rest.api.model.v4.api.ApiEntity;
 import io.gravitee.rest.api.service.UserService;
-import io.gravitee.rest.api.service.cockpit.services.V4ApiService;
+import io.gravitee.rest.api.service.cockpit.services.V4ApiServiceCockpit;
 import io.gravitee.rest.api.service.common.GraviteeContext;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.observers.TestObserver;
@@ -50,7 +50,7 @@ public class V4ApiCommandHandlerTest {
     private UserService userService;
 
     @Mock
-    private V4ApiService v4ApiService;
+    private V4ApiServiceCockpit v4ApiServiceCockpit;
 
     @Mock
     private UserEntity userEntity;
@@ -77,12 +77,12 @@ public class V4ApiCommandHandlerTest {
             .thenReturn(userEntity);
         when(userEntity.getId()).thenReturn("user-id");
 
-        commandHandler = new V4ApiCommandHandler(v4ApiService, userService);
+        commandHandler = new V4ApiCommandHandler(v4ApiServiceCockpit, userService);
     }
 
     @Test
     public void handleSuccessfulCommand() throws InterruptedException, JsonProcessingException {
-        when(v4ApiService.createPublishApi(anyString(), anyString())).thenReturn(Single.just(apiEntity));
+        when(v4ApiServiceCockpit.createPublishApi(anyString(), anyString())).thenReturn(Single.just(apiEntity));
 
         TestObserver<V4ApiReply> observer = commandHandler.handle(command).test();
         observer.await();
@@ -94,12 +94,12 @@ public class V4ApiCommandHandlerTest {
             reply.getApiName().equals("test-name") &&
             reply.getApiVersion().equals("V4")
         );
-        verify(v4ApiService, times(1)).createPublishApi(anyString(), anyString());
+        verify(v4ApiServiceCockpit, times(1)).createPublishApi(anyString(), anyString());
     }
 
     @Test
     public void handleException() throws Exception {
-        when(v4ApiService.createPublishApi(anyString(), anyString())).thenThrow(new JsonProcessingException("exception") {});
+        when(v4ApiServiceCockpit.createPublishApi(anyString(), anyString())).thenThrow(new JsonProcessingException("exception") {});
 
         TestObserver<V4ApiReply> observer = commandHandler.handle(command).test();
 
