@@ -51,11 +51,11 @@ public class V4ApiServiceCockpitTest {
     @Mock
     private ApiStateService apiStateService;
 
-    private V4ApiServiceCockpit service;
+    private V4ApiServiceCockpitImpl service;
 
     @BeforeEach
     public void setUp() throws Exception {
-        service = new V4ApiServiceCockpit(apiServiceV4, planServiceV4, apiStateService);
+        service = new V4ApiServiceCockpitImpl(apiServiceV4, planServiceV4, apiStateService);
     }
 
     @Test
