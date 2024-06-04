@@ -35,7 +35,7 @@
     "devDependencies": {
         "@jest/create-cache-key-function": "28.0.1",
         "@types/jest": "27.4.1",
-        "@types/jsonwebtoken": "8.5.8",
+        "@types/jsonwebtoken": "9.0.6",
         "@types/node": "16.10.9",
         "@types/node-fetch": "2.6.1",
         "ansi-regex": "6.0.1",
@@ -44,7 +44,7 @@
         "har-validator": "5.1.5",
         "jest": "27.5.1",
         "license-check-and-add": "4.0.3",
-        "node-fetch": "2.6.7",
+        "node-fetch": "3.3.2",
         "prettier": "2.8.4",
         "ts-jest": "27.1.5",
         "typescript": "4.5.2",
@@ -57,7 +57,7 @@
         "@gravitee/management-webclient-sdk": "file:lib/management-webclient-sdk",
         "@gravitee/portal-webclient-sdk": "file:lib/portal-webclient-sdk",
         "@gravitee/utils": "file:lib/utils",
-        "jsonwebtoken": "9.0.0",
+        "jsonwebtoken": "9.0.2",
         "rxjs": "7.5.5"
     }
 }
